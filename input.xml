@@ -21,6 +21,6 @@
         <expression>9 * 7</expression>
     </example>
     <example>
-        <expression>60 /6+  2*(4-(6-4))</expression>
+        <expression>60 / 6 + 2 * (4 - (6 - 4))</expression>
     </example>
 </mathExamples>

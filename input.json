@@ -1,26 +1,28 @@
-[
+{
+  "examples": [
     {
-        "expression": "4 + 2"
+      "expression": "4 + 2"
     },
     {
-        "expression": "9 - 5"
+      "expression": "9 - 5"
     },
     {
-        "expression": "7 * 6"
+      "expression": "7 * 6"
     },
     {
-        "expression": "25 / 5 - (2 + 1)"
+      "expression": "25 / 5 - (2 + 1)"
     },
     {
-        "expression": "11 + 13"
+      "expression": "11 + 13"
     },
     {
-        "expression": "27 - 7"
+      "expression": "27 - 7"
     },
     {
-        "expression": "9 * 7"
+      "expression": "9 * 7"
     },
     {
-        "expression": "60 / 6 + 2 * (4 - (6 - 4))"
+      "expression": "60 / 6 + 2 * (4 - (6 - 4))"
     }
-]
+  ]
+}

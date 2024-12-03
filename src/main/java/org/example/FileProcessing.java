@@ -8,11 +8,26 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.util.ArrayList;
+import java.util.Map;
 
-/**
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.yaml.snakeyaml.Yaml;
+
+
+
+
+
+/*
  * Класс для работы с текстовыми файлами и XML: чтение и запись математических выражений.
  */
 public class FileProcessing {
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private Yaml yaml = new Yaml();
+
 
     // Чтение из текстового файла
     public List<String> readTextFile(Path path) throws IOException {
@@ -38,4 +53,59 @@ public class FileProcessing {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(mathExamples, path.toFile());
     }
+
+    // Чтение из JSON файла
+    public MathExampleList readJsonFile(Path path) throws IOException {
+        return gson.fromJson(Files.newBufferedReader(path), MathExampleList.class);
+    }
+
+    // Запись в JSON файл
+    public void writeJsonFile(Path path, MathExampleList mathExampleList) throws IOException {
+        try (var writer = Files.newBufferedWriter(path)) {
+            gson.toJson(mathExampleList, writer);
+        }
+    }
+
+    // Чтение из YAML файла
+    public List<MathExample> readYamlFile(Path path) throws IOException {
+        List<MathExample> examples = new ArrayList<>();
+
+        try (var reader = Files.newBufferedReader(path)) {
+            Iterable<Object> iterable = yaml.loadAll(reader);
+
+            // Проход по каждому объекту в загруженных данных
+            for (Object obj : iterable) {
+                if (obj instanceof List) { // Проверяем, является ли объект списком
+                    List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
+                    for (Map<String, Object> map : list) {
+                        String expression = (String) map.get("expression");
+                        MathExample example = new MathExample();
+                        example.setExpression(expression);
+                        examples.add(example);
+                    }
+                } else if (obj instanceof Map) {
+                    Map<String, Object> map = (Map<String, Object>) obj;
+                    String expression = (String) map.get("expression");
+                    MathExample example = new MathExample();
+                    example.setExpression(expression);
+                    examples.add(example);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Ошибка при чтении файла: " + e.getMessage());
+            throw e; // Пробрасываем исключение дальше
+        }
+
+        return examples;
+    }
+
+    // Запись в YAML файл
+    public void writeYamlFile(Path path, List<MathExample> examples) throws IOException {
+        try (var writer = Files.newBufferedWriter(path)) {
+            yaml.dump(examples, writer);
+        }
+    }
 }
+
+
+
