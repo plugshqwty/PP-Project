@@ -3,6 +3,7 @@ package org.example;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -100,9 +101,20 @@ public class FileProcessing {
     }
 
     // Запись в YAML файл
-    public void writeYamlFile(Path path, List<MathExample> examples) throws IOException {
+    public void writeYamlFile(Path path, List<String> expressions) throws IOException {
         try (var writer = Files.newBufferedWriter(path)) {
-            yaml.dump(examples, writer);
+            Yaml yaml = new Yaml(); // Создание экземпляра Yaml
+            List<Map<String, String>> data = new ArrayList<>();
+
+            // Заполнение списка карт с выражениями
+            for (String expression : expressions) {
+                Map<String, String> entry = new HashMap<>();
+                entry.put("expression", expression);
+                data.add(entry);
+            }
+
+            // Запись данных в файл
+            yaml.dump(data, writer);
         }
     }
 }
