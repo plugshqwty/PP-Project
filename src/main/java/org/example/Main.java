@@ -268,12 +268,32 @@ public class Main {
             System.out.println("Неверный выбор источника данных.");
             return;
         }
-
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         // Вывод всех прочитанных выражений
         System.out.println("Прочитанные выражения:");
         for (String expr : expressions) {
             System.out.println(expr);
         }
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        System.out.println("Выберите способ подсчета выражений: ");
+        System.out.println("1. Используя регулярные выражения");
+        System.out.println("2. Без использования регулярных выражений");
+        int сhoice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (сhoice) {
+            case 1:
+                MathEvaluator.evaluateExpressions(expressions);
+                break;
+            case 2:
+                MathEvaluatorNot.evaluateExpressions(expressions);
+                break;
+            default:
+                System.out.println("Неверный выбор.");
+                return;
+        }
+
+
 
         // Спрашиваем о типе выходного файла
         System.out.println("Выберите тип выходного файла: ");
