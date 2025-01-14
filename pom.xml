@@ -55,5 +55,12 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.30</version> <!-- Или последнюю версию -->
         </dependency>
+
+        <dependency>
+            <groupId>net.objecthunter</groupId>
+            <artifactId>exp4j</artifactId>
+            <version>0.4.8</version>
+        </dependency>
+
     </dependencies>
 </project>

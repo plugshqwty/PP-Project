@@ -278,6 +278,7 @@ public class Main {
         System.out.println("Выберите способ подсчета выражений: ");
         System.out.println("1. Используя регулярные выражения");
         System.out.println("2. Без использования регулярных выражений");
+        System.out.println("3. Используя библиотеку");
         int сhoice = scanner.nextInt();
         scanner.nextLine();
 
@@ -288,12 +289,13 @@ public class Main {
             case 2:
                 MathEvaluatorNot.evaluateExpressions(expressions);
                 break;
+            case 3:
+                MathEvaluatorLibrary.evaluateExpressions(expressions);
+                break;
             default:
                 System.out.println("Неверный выбор.");
                 return;
         }
-
-
 
         // Спрашиваем о типе выходного файла
         System.out.println("Выберите тип выходного файла: ");
