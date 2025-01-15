@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class MathEvaluator {
 
-    public static void evaluateExpressions(List<String> expressions) {
+     public static List<String> evaluateExpressions(List<String> expressions) {
         for (int i = 0; i < expressions.size(); i++) {
             String expression = expressions.get(i);
             try {
@@ -20,6 +20,7 @@ public class MathEvaluator {
 
         // Вывод результатов
         expressions.forEach(System.out::println);
+        return expressions;
     }
 
     private static double evaluateExpression(String expression) throws Exception {
