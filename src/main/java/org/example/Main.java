@@ -178,9 +178,16 @@ public class Main {
                                 fileTypes,
                                 fileTypes[0]
                         );
+                        Path archivePath = Path.of("input.zip"); // Путь к архиву всегда фиксированный
+                        Path outputDir = Paths.get("."); // Текущая директория
 
+                        // Разархивируем архив
+                        try {
+                            archiver.extractFile(archivePath, outputDir);
+                        } catch (IOException a) {
+                            a.printStackTrace();
+                        }
                         if (fileType != null) {
-                            Path outputDir = Paths.get("."); // Текущая директория
                             Path inputPath = outputDir.resolve(
                                     fileType.equals("Текстовый файл") ? "input.txt" :
                                             fileType.equals("XML файл") ? "input.xml" :
@@ -191,6 +198,7 @@ public class Main {
                             try {
                                 // Чтение выражений в зависимости от типа файла
                                 if (fileType.equals("Текстовый файл")) {
+
                                     expressions = processor.readTextFile(inputPath);
                                     updateExpressionList();
                                 } else if (fileType.equals("XML файл")) {
@@ -229,9 +237,16 @@ public class Main {
                                 encryptedFileTypes,
                                 encryptedFileTypes[0]
                         );
+                        Path archivePath = Path.of("input.zip"); // Путь к архиву всегда фиксированный
+                        Path outputDir = Paths.get("."); // Текущая директория
 
+                        // Разархивируем архив
+                        try {
+                            archiver.extractFile(archivePath, outputDir);
+                        } catch (IOException a) {
+                            a.printStackTrace();
+                        }
                         if (encryptedFileType != null) {
-                            Path outputDir = Paths.get("."); // Текущая директория
                             Path encryptedPath;
                             Path keyPath;
                             Path ivPath;
