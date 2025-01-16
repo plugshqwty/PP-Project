@@ -239,7 +239,6 @@ public class Main {
                         );
                         Path archivePath = Path.of("input.zip"); // Путь к архиву всегда фиксированный
                         Path outputDir = Paths.get("."); // Текущая директория
-
                         // Разархивируем архив
                         try {
                             archiver.extractFile(archivePath, outputDir);
