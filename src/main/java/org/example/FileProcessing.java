@@ -117,6 +117,30 @@ public class FileProcessing {
             yaml.dump(data, writer);
         }
     }
+
+
+
+    public static class Builder {
+        private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        private Yaml yaml = new Yaml();
+
+        public Builder setGson(Gson gson) {
+            this.gson = gson;
+            return this;
+        }
+
+        public Builder setYaml(Yaml yaml) {
+            this.yaml = yaml;
+            return this;
+        }
+
+        public FileProcessing build() {
+            FileProcessing fileProcessing = new FileProcessing();
+            fileProcessing.gson = this.gson;
+            fileProcessing.yaml = this.yaml;
+            return fileProcessing;
+        }
+    }
 }
 
 

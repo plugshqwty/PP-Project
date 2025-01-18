@@ -19,7 +19,9 @@ public class MathEvaluatorTests {
                 "25 / 5 - (2 + 1)"
         ));
 
-        MathEvaluator.evaluateExpressions(expressions);
+        MathEvaluatorStrategy.MathEvaluatorContext context = new MathEvaluatorStrategy.MathEvaluatorContext();
+        context.setStrategy(new MathEvaluatorStrategy.MathEvaluator());
+        context.evaluateExpressions(expressions);
 
         assertEquals(Arrays.asList("8.0", "6.0", "42.0", "4.0", "2.0"), expressions);
     }
@@ -34,7 +36,9 @@ public class MathEvaluatorTests {
                 "25 / 5 - (2 + 1)"
         ));
 
-        MathEvaluatorLibrary.evaluateExpressions(expressions);
+        MathEvaluatorStrategy.MathEvaluatorContext context = new MathEvaluatorStrategy.MathEvaluatorContext();
+        context.setStrategy(new MathEvaluatorStrategy.MathEvaluatorLibrary());
+        context.evaluateExpressions(expressions);
 
         assertEquals(Arrays.asList("8.0", "6.0", "42.0", "4.0", "2.0"), expressions);
     }
@@ -49,7 +53,9 @@ public class MathEvaluatorTests {
                 "25 / 5 - (2 + 1)"
         ));
 
-        MathEvaluatorNot.evaluateExpressions(expressions);
+        MathEvaluatorStrategy.MathEvaluatorContext context = new MathEvaluatorStrategy.MathEvaluatorContext();
+        context.setStrategy(new MathEvaluatorStrategy.MathEvaluatorNot());
+        context.evaluateExpressions(expressions);
 
         assertEquals(Arrays.asList("8.0", "6.0", "42.0", "4.0", "2.0"), expressions);
     }
@@ -62,10 +68,19 @@ public class MathEvaluatorTests {
                 "invalid expression" // Некорректное выражение
         ));
 
-        MathEvaluator.evaluateExpressions(expressions);
-        MathEvaluatorLibrary.evaluateExpressions(expressions);
-        MathEvaluatorNot.evaluateExpressions(expressions);
+        // Проверяем обработку ошибок для каждой стратегии
+        for (MathEvaluatorStrategy.MathEvaluationStrategy strategy : Arrays.asList(
+                new MathEvaluatorStrategy.MathEvaluator(),
+                new MathEvaluatorStrategy.MathEvaluatorLibrary(),
+                new MathEvaluatorStrategy.MathEvaluatorNot())) {
 
-        assertEquals(Arrays.asList("Ошибка", "10.0", "Ошибка"), expressions);
+            List<String> testExpressions = new ArrayList<>(expressions);
+            MathEvaluatorStrategy.MathEvaluatorContext context = new MathEvaluatorStrategy.MathEvaluatorContext();
+            context.setStrategy(strategy);
+            context.evaluateExpressions(testExpressions);
+
+            // Проверяем, что ошибки корректно обрабатываются
+            assertEquals(Arrays.asList("Ошибка", "10.0", "Ошибка"), testExpressions);
+        }
     }
 }

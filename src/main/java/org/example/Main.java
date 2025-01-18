@@ -46,7 +46,10 @@ public class Main {
         }
 
         private void createAndShowGUI() {
-            FileProcessing processor = new FileProcessing();
+            //FileProcessing processor = new FileProcessing();
+            FileProcessing processor = new FileProcessing.Builder().build();
+            MathEvaluatorStrategy.MathEvaluatorContext context= new MathEvaluatorStrategy.MathEvaluatorContext();
+
             FileArchiver archiver = new FileArchiver();
 
             final SecretKey[] key = {null};
@@ -84,72 +87,22 @@ public class Main {
 
 
             // Кнопка "Обычный файл" с выпадающим меню
+// Кнопка "Обычный файл" с выпадающим меню
             JButton normalFileButton = new JButton("Обычный файл");
-            // Кнопка "Обычный файл"
             normalFileButton.setPreferredSize(buttonSize);
             normalFileButton.setFont(buttonFont);
             JPopupMenu normalFileMenu = new JPopupMenu();
             String[] normalFileTypes = {"Текстовый файл", "XML файл", "JSON файл", "YAML файл"};
+
             for (String fileType : normalFileTypes) {
                 JMenuItem item = new JMenuItem(fileType);
-                item.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-
-                        if (fileType.equals("Текстовый файл")) {
-                            Path inputPath = Path.of("input.txt");
-                            try {
-                                expressions = processor.readTextFile(inputPath);
-                                updateExpressionList(); // Обновляем список
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                        } else if(fileType.equals("XML файл")){
-                            Path inputPath = Path.of("input.xml");
-                            MathExamples mathExamples = null;
-                            try {
-                                mathExamples = processor.readXmlFile(inputPath);
-                            } catch (JAXBException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            for (MathExample example : mathExamples.getExamples()) {
-                                expressions.add(example.getExpression());
-                            }
-                            updateExpressionList(); // Обновляем список
-                        } else if(fileType.equals("JSON файл")){
-                            Path inputPath = Path.of("input.json");
-                            MathExampleList mathExampleList = null;
-                            try {
-                                mathExampleList = processor.readJsonFile(inputPath);
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            for (MathExample example : mathExampleList.getExamples()) {
-                                expressions.add(example.getExpression());
-                            }
-                            updateExpressionList(); // Обновляем список
-                        } else if(fileType.equals("YAML файл")){
-                            Path inputPath = Path.of("input.yaml");
-                            List<MathExample> mathExamples = null;
-                            try {
-                                mathExamples = processor.readYamlFile(inputPath);
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            for (MathExample example : mathExamples) {
-                                expressions.add(example.getExpression());
-                            }
-                            updateExpressionList(); // Обновляем список
-                        }
-                        System.out.println("Выбран нормальный файл: " + fileType);
-                    }
-                });
+                item.addActionListener(e -> handleNormalFileSelection(fileType, processor));
                 normalFileMenu.add(item);
             }
 
             normalFileButton.addActionListener(e -> normalFileMenu.show(normalFileButton, 0, normalFileButton.getHeight()));
             panel.add(normalFileButton);
+
 
             // Кнопка "Заархивированный файл" с выпадающим меню
             JButton archivedFileButton = new JButton("Заархивированный файл");
@@ -188,6 +141,7 @@ public class Main {
                             a.printStackTrace();
                         }
                         if (fileType != null) {
+                            // Здесь вы можете сформировать путь к файлу
                             Path inputPath = outputDir.resolve(
                                     fileType.equals("Текстовый файл") ? "input.txt" :
                                             fileType.equals("XML файл") ? "input.xml" :
@@ -195,35 +149,8 @@ public class Main {
                                                             "input.yaml"
                             );
 
-                            try {
-                                // Чтение выражений в зависимости от типа файла
-                                if (fileType.equals("Текстовый файл")) {
-
-                                    expressions = processor.readTextFile(inputPath);
-                                    updateExpressionList();
-                                } else if (fileType.equals("XML файл")) {
-                                    MathExamples mathExamples = processor.readXmlFile(inputPath);
-                                    for (MathExample example : mathExamples.getExamples()) {
-                                        expressions.add(example.getExpression());
-                                    }
-                                    updateExpressionList();
-                                } else if (fileType.equals("JSON файл")) {
-                                    MathExampleList mathExampleList = processor.readJsonFile(inputPath);
-                                    for (MathExample example : mathExampleList.getExamples()) {
-                                        expressions.add(example.getExpression());
-                                    }
-                                    updateExpressionList();
-                                } else if (fileType.equals("YAML файл")) {
-                                    List<MathExample> mathExamples = processor.readYamlFile(inputPath);
-                                    for (MathExample example : mathExamples) {
-                                        expressions.add(example.getExpression());
-                                    }
-                                    updateExpressionList();
-                                }
-                                //updateExpressionList(); // Обновляем список после загрузки
-                            } catch (IOException | JAXBException ex) {
-                                ex.printStackTrace();
-                            }
+                            // Теперь вместо повторного кода, просто вызовите метод
+                            handleNormalFileSelection(fileType, processor);
                         }
                     } else if (fileOption.equals("Зашифрованные файлы")) {
                         // Обработка зашифрованных файлов
@@ -398,19 +325,16 @@ public class Main {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (countType.equals("Используя регулярные выражения")) {
-                            // MathEvaluator.evaluateExpressions(expressions);
-                            expressions = MathEvaluator.evaluateExpressions(expressions);
-                            updateExpressionList();
+                            context.setStrategy(new MathEvaluatorStrategy.MathEvaluator());
                         } else if (countType.equals("Без использования регулярных выражений")) {
-                            expressions = MathEvaluatorNot.evaluateExpressions(expressions);
-                            updateExpressionList();
+                            context.setStrategy(new MathEvaluatorStrategy.MathEvaluatorNot());
                         } else if (countType.equals("Используя библиотеку")) {
-                            expressions = MathEvaluatorLibrary.evaluateExpressions(expressions);
-                            for(int i=0; i<results.size(); i++) {
-                                System.out.println(expressions.get(i));
-                            }
-                            updateExpressionList();
+                            context.setStrategy(new MathEvaluatorStrategy.MathEvaluatorLibrary());
                         }
+
+                        // Вычисляем выражения и обновляем список
+                        expressions = context.evaluateExpressions(expressions);
+                        updateExpressionList();
                     }
                 });
                 countingMenu.add(item1); // Добавляем элемент в меню
@@ -552,6 +476,60 @@ public class Main {
 
 
 
+        }
+        private void handleNormalFileSelection(String fileType, FileProcessing processor) {
+            Path inputPath = null;
+
+            switch (fileType) {
+                case "Текстовый файл":
+                    inputPath = Path.of("input.txt");
+                    break;
+                case "XML файл":
+                    inputPath = Path.of("input.xml");
+                    break;
+                case "JSON файл":
+                    inputPath = Path.of("input.json");
+                    break;
+                case "YAML файл":
+                    inputPath = Path.of("input.yaml");
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported file type: " + fileType);
+            }
+
+            try {
+                switch (fileType) {
+                    case "Текстовый файл":
+                        expressions = processor.readTextFile(inputPath);
+                        updateExpressionList(); // Обновляем список
+                        break;
+                    case "XML файл":
+                        MathExamples mathExamples = processor.readXmlFile(inputPath);
+                        for (MathExample example : mathExamples.getExamples()) {
+                            expressions.add(example.getExpression());
+                        }
+                        updateExpressionList(); // Обновляем список
+                        break;
+                    case "JSON файл":
+                        MathExampleList mathExampleList = processor.readJsonFile(inputPath);
+                        for (MathExample example : mathExampleList.getExamples()) {
+                            expressions.add(example.getExpression());
+                        }
+                        updateExpressionList(); // Обновляем список
+                        break;
+                    case "YAML файл":
+                        List<MathExample> yamlExamples = processor.readYamlFile(inputPath);
+                        for (MathExample example : yamlExamples) {
+                            expressions.add(example.getExpression());
+                        }
+                        updateExpressionList(); // Обновляем список
+                        break;
+                }
+
+                System.out.println("Выбран нормальный файл: " + fileType);
+            } catch (IOException | JAXBException ex) {
+                throw new RuntimeException(ex);
+            }
         }
 
         private void applySettings(String selectedFileType, boolean isEncrypted, boolean isArchived, List<String> expressions ) {
